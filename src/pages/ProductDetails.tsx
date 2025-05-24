@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Container,
@@ -15,13 +15,30 @@ import { addToCart } from '../store/slices/cartSlice';
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const product = useSelector((state: RootState) =>
     state.products.items.find((p) => p.id === Number(id))
   );
 
   if (!product) {
-    return <Typography>Product not found</Typography>;
+    return (
+      <Container sx={{ py: 6 }}>
+        <Typography variant="h5" color="error" align="center" gutterBottom>
+          Producto no encontrado
+        </Typography>
+        <Box display="flex" justifyContent="center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate(-1)}
+          >
+            Volver atrás
+          </Button>
+        </Box>
+      </Container>
+    );
   }
 
   const handleAddToCart = () => {
@@ -31,6 +48,7 @@ const ProductDetails = () => {
   return (
     <Container sx={{ py: 4 }}>
       <Grid container spacing={4}>
+        {/* Imagen del producto */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardMedia
@@ -42,33 +60,56 @@ const ProductDetails = () => {
             />
           </Card>
         </Grid>
+
+        {/* Detalles del producto */}
         <Grid item xs={12} md={6}>
           <Typography variant="h4" gutterBottom>
             {product.name}
           </Typography>
+
           <Typography variant="h5" color="primary" gutterBottom>
             ${product.price.toFixed(2)}
           </Typography>
+
+          {/* Breadcrumb de categoría */}
           <Box sx={{ my: 2 }}>
             <Chip label={product.category} color="secondary" />
           </Box>
-          <Typography variant="body1" paragraph>
-            {product.description}
+
+          {/* Descripción */}
+          <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+            Descripción:
           </Typography>
+          <Typography variant="body2" paragraph>
+            {product.description || 'No hay descripción disponible.'}
+          </Typography>
+
+          {/* Stock */}
           <Box sx={{ mt: 2 }}>
             <Typography variant="subtitle1" gutterBottom>
-              Stock: {product.stock} units
+              Stock:
+              <strong
+                style={{
+                  color: product.stock > 0 ? 'green' : 'red',
+                  marginLeft: 8,
+                }}
+              >
+                {product.stock > 0 ? `${product.stock} unidades` : 'Agotado'}
+              </strong>
             </Typography>
           </Box>
+
+          {/* Botón de añadir al carrito */}
           <Button
             variant="contained"
             color="primary"
             size="large"
             onClick={handleAddToCart}
-            sx={{ mt: 2 }}
+            sx={{ mt: 3 }}
             fullWidth
+            disabled={product.stock === 0}
           >
-            Add to Cart
+            Añadir al carrito
           </Button>
         </Grid>
       </Grid>
@@ -76,4 +117,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails; 
+export default ProductDetails;

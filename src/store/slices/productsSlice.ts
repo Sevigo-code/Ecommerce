@@ -22,32 +22,32 @@ export const fetchProducts = createAsyncThunk(
     try {
       const response = await axios.get('https://fakestoreapi.com/products');
       
-      // Validate the response data
+      //Validacion de las respuestas
       if (!Array.isArray(response.data)) {
-        throw new Error('Invalid response format');
+        throw new Error('Formato Invalido');
       }
 
-      // Transform and validate each product
+      //Validacion de cada producto
       return response.data.map((item: any) => {
         if (!item.title || !item.price || !item.image) {
-          console.warn('Invalid product data:', item);
+          console.warn('Datos del producto invalidos:', item);
         }
 
         return {
           id: item.id || Math.random(),
-          name: item.title || 'Unknown Product',
+          name: item.title || 'Producto desconocido',
           description: item.description || '',
           price: Number(item.price) || 0,
           image: item.image || '',
-          category: item.category || 'Uncategorized',
-          stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
+          category: item.category || 'Sin categoria',
+          stock: Math.floor(Math.random() * 50) + 1, //Stock random
         };
       });
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Failed to fetch products');
+      return rejectWithValue('Error al obtener los productos');
     }
   }
 );
@@ -73,7 +73,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || 'Failed to fetch products';
+        state.error = action.payload as string || 'Error al cargar los productos';
         state.items = [];
       });
   },

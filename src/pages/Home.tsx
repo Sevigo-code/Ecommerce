@@ -52,11 +52,18 @@ const Home = () => {
 
   if (loading) {
     return (
-      <Container>
+      <Container sx={{ py: 4 }}>
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((skeleton) => (
             <Grid item key={skeleton} xs={12} sm={6} md={4}>
-              <div className="loading-skeleton"></div>
+              <Box
+                sx={{
+                  height: 300,
+                  bgcolor: '#f0f0f0',
+                  borderRadius: 2,
+                  animation: 'pulse 1.5s infinite ease-in-out',
+                }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -66,36 +73,27 @@ const Home = () => {
 
   if (error) {
     return (
-      <Container>
+      <Container sx={{ py: 4 }}>
         <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
           {error}
         </Alert>
-        <Button 
-          variant="contained" 
-          onClick={() => dispatch(fetchProducts())}
-        >
-          Retry Loading Products
+        <Button variant="contained" onClick={() => dispatch(fetchProducts())}>
+          Reintentar
         </Button>
       </Container>
     );
   }
 
   return (
-    <Container className="fade-in">
-      {products.length === 0 && !loading && !error && (
-        <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
-          No products available
-        </Alert>
-      )}
-
-      <FormControl fullWidth size="small">
-        <InputLabel>Category</InputLabel>
+    <Container sx={{ py: 4 }} className="fade-in">
+      <FormControl fullWidth size="small" sx={{ mb: 3 }}>
+        <InputLabel>Categoría</InputLabel>
         <Select
           value={selectedCategory || ''}
           onChange={(e) => handleCategoryChange(e.target.value || null)}
-          label="Category"
+          label="Categoría"
         >
-          <MenuItem value="">All Categories</MenuItem>
+          <MenuItem value="">Todas las categorías</MenuItem>
           {categories.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
@@ -104,38 +102,54 @@ const Home = () => {
         </Select>
       </FormControl>
 
+      {products.length === 0 && !loading && !error && (
+        <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+          No hay productos disponibles
+        </Alert>
+      )}
+
       <Grid container spacing={3}>
         {filteredProducts.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4}>
-            <Card>
-              <div className="image-container">
+            <Card
+              sx={{
+                borderRadius: 3,
+                boxShadow: 3,
+                transition: 'transform 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                },
+              }}
+            >
+              <Box sx={{ position: 'relative', p: 2, bgcolor: '#f9f9f9' }}>
                 <CardMedia
                   component="img"
                   image={product.image}
                   alt={product.name}
                   sx={{
                     width: '100%',
-                    height: '100%',
-                    objectFit: 'contain'
+                    height: 200,
+                    objectFit: 'contain',
+                    borderRadius: 2,
                   }}
                 />
                 <Box
                   sx={{
                     position: 'absolute',
-                    top: 8,
-                    right: 8,
+                    top: 10,
+                    right: 10,
                     display: 'flex',
                     gap: 1,
                   }}
                 >
-                  <Tooltip title="Add to Wishlist">
+                  <Tooltip title="Añadir a favoritos">
                     <IconButton
                       size="small"
                       sx={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        backdropFilter: 'blur(4px)',
+                        backgroundColor: 'white',
+                        boxShadow: 1,
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 1)',
+                          backgroundColor: '#f0f0f0',
                         },
                       }}
                     >
@@ -143,11 +157,11 @@ const Home = () => {
                     </IconButton>
                   </Tooltip>
                 </Box>
-              </div>
+              </Box>
               <CardContent>
                 <Typography
-                  variant="h6"
-                  component="div"
+                  variant="subtitle1"
+                  fontWeight={600}
                   onClick={() => navigate(`/product/${product.id}`)}
                   sx={{
                     cursor: 'pointer',
@@ -156,19 +170,20 @@ const Home = () => {
                 >
                   {product.name}
                 </Typography>
-                <Typography className="price-tag">
-                  {product.price.toFixed(2)}
+                <Typography variant="body2" color="text.secondary" mt={0.5}>
+                  ${product.price.toFixed(2)}
                 </Typography>
-                <Box className="product-actions">
-                  <Button
-                    variant="contained"
-                    onClick={() => handleAddToCart(product)}
-                    startIcon={<ShoppingCartOutlinedIcon />}
-                    fullWidth
-                  >
-                    Add to Cart
-                  </Button>
-                </Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  startIcon={<ShoppingCartOutlinedIcon />}
+                  fullWidth
+                  sx={{ mt: 2, borderRadius: 2 }}
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Añadir al carrito
+                </Button>
               </CardContent>
             </Card>
           </Grid>
@@ -178,4 +193,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;

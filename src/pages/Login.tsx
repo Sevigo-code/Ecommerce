@@ -73,10 +73,10 @@ const Login = () => {
               letterSpacing: '-0.5px'
             }}
           >
-            Welcome to TechVibe
+            Bienvenido a TechVibe
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Sign in to continue shopping
+            Inicia Sesión para seguir comprando
           </Typography>
         </Box>
         
