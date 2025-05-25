@@ -173,68 +173,66 @@ body {
 
 // Estilos para Card (tarjetas de producto)
 .MuiCard-root {
-  height: auto; // Mejor que $card-height, permite que el contenido determine la altura
-  min-height: $card-min-height;
-  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  @include smooth-transition(transform, box-shadow); // Usa mixin
-  border-radius: $border-radius-md !important; // Radios de borde definidos
+  @include smooth-transition(transform, box-shadow);
+  border-radius: $border-radius-md !important;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(10px);
-  @include elevate(sm); // Aplica sombra pequeña
-  position: relative; // Para elementos posicionados dentro
+  @include elevate(sm);
+  position: relative;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
 
   &:hover {
-    transform: translateY(-5px); // Ligero levantamiento al pasar el mouse
-    @include elevate(lg); // Sombra más pronunciada al pasar el mouse
+    transform: translateY(-5px);
+    @include elevate(lg);
   }
 
-  // Contenedor de la imagen dentro de la tarjeta
   .image-container {
     position: relative;
     width: 100%;
-    padding-top: 100%; // Aspect ratio 1:1, excelente para la consistencia
+    padding-top: 100%;
     background-color: $image-container-background !important;
     backdrop-filter: blur(5px);
     overflow: hidden;
-    display: flex; // Para centrar la imagen
-    align-items: center; // Para centrar la imagen
-    justify-content: center; // Para centrar la imagen
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .MuiCardMedia-root {
-      position: absolute !important; // Posicionamiento absoluto dentro del contenedor
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100% !important;
-      height: 100% !important;
-      padding: $spacing-unit * 2 !important; // 1rem de padding
-      @include smooth-transition(transform);
-      background-color: transparent !important; // Ya lo tiene el contenedor padre
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .MuiCardContent-root {
+    padding: $spacing-unit * 2 $spacing-unit * 2 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit;
+    flex: 0 0 auto;
 
-      img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain; // Asegura que la imagen se ajuste sin distorsión
-        object-position: center;
-      }
+    &:last-child {
+      padding-bottom: 0 !important;
     }
   }
 
-  // Contenido de la tarjeta (texto, precio, etc.)
-  .MuiCardContent-root {
-    padding: $spacing-unit * 2 !important; // 1rem
-    flex: 1; // Permite que el contenido ocupe el espacio restante
+  .product-actions {
+    padding: $spacing-unit * 2 !important;
+    margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: $spacing-unit; // 0.5rem de espacio entre elementos
+    gap: $spacing-unit;
+  }
+
+  .MuiButton-root {
+    margin: 0 !important;
+  }
+
+  .MuiTypography-root {
+    margin-bottom: 0 !important;
+  }
+
+  .price-tag {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   // Título del producto dentro de la tarjeta
@@ -246,14 +244,6 @@ body {
     margin: 0;
     @include text-ellipsis(2); // Limita a 2 líneas y añade ellipsis
   }
-}
-
-// Acciones del producto (ej. botones)
-.product-actions {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-unit; // 0.5rem
-  margin-top: auto; // Empuja los botones al final de la tarjeta
 }
 
 // Estilos de la etiqueta de precio

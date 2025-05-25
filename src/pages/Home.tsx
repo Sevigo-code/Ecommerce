@@ -190,7 +190,10 @@ const Home = () => {
           <Grid item key={product.id} xs={12} sm={6} md={4}>
             <Box
               sx={{
-                background: 'white',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                background: 'rgba(255, 255, 255, 0.9)',
                 borderRadius: 3,
                 overflow: 'hidden',
                 boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
@@ -199,18 +202,19 @@ const Home = () => {
                   transform: 'translateY(-8px)',
                   boxShadow: '0 16px 32px rgba(0,0,0,0.15)',
                 },
-                height: '100%',
               }}
             >
               <Box 
                 sx={{ 
                   position: 'relative',
-                  p: 2,
-                  background: 'white',
+                  width: '100%',
+                  height: 250,
+                  backgroundColor: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: '250px',
+                  padding: 2,
+                  flexShrink: 0,
                 }}
               >
                 {!imagesLoaded[product.id] && (
@@ -257,73 +261,65 @@ const Home = () => {
                     }));
                   }}
                 />
-                <Box
+                <IconButton
+                  size="small"
+                  onClick={() => handleToggleFavorite(product)}
                   sx={{
                     position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    display: 'flex',
-                    gap: 1,
-                    zIndex: 2,
+                    top: 8,
+                    right: 8,
+                    background: 'rgba(255, 255, 255, 0.6)',
+                    backdropFilter: 'blur(5px)',
+                    color: isFavorite(product.id) ? '#f50057' : 'inherit',
+                    '&:hover': {
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      color: isFavorite(product.id) ? '#dc004e' : '#f50057',
+                    },
                   }}
                 >
-                  <Tooltip title={isFavorite(product.id) ? "Remove from Favorites" : "Add to Favorites"}>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleToggleFavorite(product)}
-                      sx={{
-                        background: 'rgba(255, 255, 255, 0.6)',
-                        backdropFilter: 'blur(5px)',
-                        color: isFavorite(product.id) ? '#f50057' : 'inherit',
-                        '&:hover': {
-                          background: 'rgba(255, 255, 255, 0.8)',
-                          color: isFavorite(product.id) ? '#dc004e' : '#f50057',
-                        },
-                      }}
-                    >
-                      {isFavorite(product.id) ? (
-                        <FavoriteIcon sx={{ fontSize: 18 }} />
-                      ) : (
-                        <FavoriteBorderIcon sx={{ fontSize: 18 }} />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                  {isFavorite(product.id) ? (
+                    <FavoriteIcon sx={{ fontSize: 18 }} />
+                  ) : (
+                    <FavoriteBorderIcon sx={{ fontSize: 18 }} />
+                  )}
+                </IconButton>
               </Box>
-              <Box 
+
+              <Box
                 sx={{ 
-                  p: 2,
-                  background: 'rgba(220, 220, 220, 0.5)',
-                  backdropFilter: 'blur(8px)',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                  backgroundColor: 'rgba(245, 245, 245, 0.9)',
+                  padding: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flex: 1,
                 }}
               >
-                <Typography
-                  variant="subtitle1"
-                  fontWeight={600}
-                  onClick={() => navigate(`/product/${product.id}`)}
-                  sx={{
-                    cursor: 'pointer',
-                    color: 'rgba(0, 0, 0, 0.87)',
-                    '&:hover': { color: 'primary.main' },
-                  }}
-                >
-                  {product.name}
-                </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'rgba(0, 0, 0, 0.7)',
-                    mt: 0.5 
-                  }}
-                >
-                  ${product.price.toFixed(2)}
-                </Typography>
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    sx={{
+                      cursor: 'pointer',
+                      color: 'rgba(0, 0, 0, 0.87)',
+                      '&:hover': { color: 'primary.main' },
+                      mb: 1,
+                    }}
+                  >
+                    {product.name}
+                  </Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ color: 'rgba(0, 0, 0, 0.7)' }}
+                  >
+                    ${product.price.toFixed(2)}
+                  </Typography>
+                </Box>
                 <ActionButton
                   variant="primary"
                   startIcon={<ShoppingCartOutlinedIcon />}
-                  sx={{ mt: 2 }}
                   onClick={() => handleAddToCart(product)}
+                  sx={{ width: '100%', mt: 2 }}
                 >
                   ADD TO CART
                 </ActionButton>
