@@ -1,8 +1,11 @@
 @use "sass:color"; // Para manipular colores, ya incluido.
 @use "sass:math"; // Para operaciones matemáticas si fueran necesarias.
 
-// Import Google Fonts
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+// Import Google Fonts - Roboto for base text and Oswald for bold headers
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+
+// Import Google Fonts - Including Rajdhani for the logo
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rajdhani:wght@700&display=swap');
 
 // ============================================================================
 // Variables de Diseño Globales
@@ -44,6 +47,10 @@ $transition-speed-slow: 0.5s;
 
 // Alturas y anchos (si son fijos, si no, es mejor dejarlos en los componentes)
 $card-min-height: 400px; // Mantenido para referencia
+
+// Typography
+$font-family-headers: 'Oswald', sans-serif;
+$font-family-base: 'Oswald', sans-serif;
 
 // ============================================================================
 // Mixins Reutilizables
@@ -91,7 +98,7 @@ html {
 }
 
 body {
-  font-family: 'Poppins', -apple-system, BlinkMacMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: $font-family-base;
   background-color: $background-light;
   color: $text-color-dark;
   line-height: 1.6;
@@ -236,7 +243,7 @@ body {
   @include smooth-transition(all); // Transición suave para todos los cambios
   @include elevate(sm); // Sombra sutil por defecto
   height: 44px; // Altura ligeramente mayor para un mejor tacto
-  font-family: 'Poppins', sans-serif !important;
+  font-family: $font-family-headers !important;
   letter-spacing: 0.5px !important;
 
   &:hover {
@@ -419,6 +426,76 @@ body {
 }
 
 // Typography styles
+h1, h2, h3, h4, h5, h6,
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6 {
+  font-family: $font-family-headers !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Override Material-UI components
 .MuiTypography-root {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: $font-family-base !important;
+}
+
+.MuiButton-root {
+  font-family: $font-family-headers !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  font-weight: 500 !important;
+}
+
+// Product title specific style
+.product-title {
+  font-family: $font-family-headers !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+// Category dropdown style
+.MuiSelect-select {
+  font-family: $font-family-headers !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Logo styling
+.logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 2rem;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: inline-block;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #ffffff;
+    transform: skewX(-20deg);
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #ffffff;
+    transform: skewX(-20deg);
+  }
 }

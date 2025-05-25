@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -27,11 +27,61 @@ import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { Product } from '../types';
 import ActionButton from '../components/ActionButton';
 
+const imageCache = new Map();
+
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { items: products, loading, error, selectedCategory } = useSelector((state: RootState) => state.products);
   const favorites = useSelector((state: RootState) => state.favorites.items);
+  const [imagesLoaded, setImagesLoaded] = useState<{[key: number]: boolean}>({});
+
+  const preloadImage = useCallback((imagePath: string, productId: number) => {
+    const url = imagePath.startsWith('http') ? imagePath : `/images/${imagePath}`;
+    
+    // Si la imagen ya está en caché, márquela como cargada
+    if (imageCache.has(url)) {
+      setImagesLoaded(prev => ({ ...prev, [productId]: true }));
+      return;
+    }
+
+    const img = new Image();
+    img.src = url;
+    img.onload = () => {
+      imageCache.set(url, true);
+      setImagesLoaded(prev => ({ ...prev, [productId]: true }));
+    };
+    img.onerror = () => {
+      imageCache.set(url, false);
+      setImagesLoaded(prev => ({ ...prev, [productId]: true }));
+    };
+  }, []);
+
+  // Precargar todas las imágenes cuando los productos cambian
+  useEffect(() => {
+    products.forEach(product => {
+      preloadImage(product.image, product.id);
+    });
+  }, [products, preloadImage]);
+
+  // Precargar imágenes de favoritos
+  useEffect(() => {
+    favorites.forEach(product => {
+      preloadImage(product.image, product.id);
+    });
+  }, [favorites, preloadImage]);
+
+  const getImageUrl = useCallback((imagePath: string) => {
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    const url = `/images/${imagePath}`;
+    // Si la imagen falló al cargar anteriormente, usar placeholder
+    if (imageCache.get(url) === false) {
+      return '/images/placeholder.jpg';
+    }
+    return url;
+  }, []);
 
   useEffect(() => {
     dispatch(fetchProducts())
@@ -59,13 +109,6 @@ const Home = () => {
 
   const isFavorite = (productId: number) => {
     return favorites.some(item => item.id === productId);
-  };
-
-  const getImageUrl = (imagePath: string) => {
-    if (imagePath.startsWith('http')) {
-      return imagePath;
-    }
-    return `/images/${imagePath}`;
   };
 
   if (loading) {
@@ -156,6 +199,7 @@ const Home = () => {
                   transform: 'translateY(-8px)',
                   boxShadow: '0 16px 32px rgba(0,0,0,0.15)',
                 },
+                height: '100%',
               }}
             >
               <Box 
@@ -169,6 +213,23 @@ const Home = () => {
                   height: '250px',
                 }}
               >
+                {!imagesLoaded[product.id] && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: '#f5f5f5',
+                    }}
+                  >
+                    <div className="loading-skeleton" />
+                  </Box>
+                )}
                 <img
                   src={getImageUrl(product.image)}
                   alt={product.name}
@@ -177,11 +238,23 @@ const Home = () => {
                     maxHeight: '100%',
                     objectFit: 'contain',
                     display: 'block',
+                    opacity: imagesLoaded[product.id] ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out',
+                  }}
+                  onLoad={() => {
+                    setImagesLoaded(prev => ({
+                      ...prev,
+                      [product.id]: true
+                    }));
                   }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = '/images/placeholder.jpg';
-                    target.onerror = null;
+                    imageCache.set(product.image, false);
+                    setImagesLoaded(prev => ({
+                      ...prev,
+                      [product.id]: true
+                    }));
                   }}
                 />
                 <Box

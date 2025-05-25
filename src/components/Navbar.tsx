@@ -81,18 +81,16 @@ const Navbar = () => {
                 variant="h6"
                 component={Link}
                 to="/"
+                className="logo"
                 sx={{
-                  fontWeight: 700,
                   textDecoration: 'none',
                   color: 'white',
-                  letterSpacing: '-0.5px',
                   fontSize: '1.75rem',
-                  fontFamily: "'Helvetica Neue', sans-serif",
                   opacity: isScrolled ? 0.9 : 1,
                   transition: 'opacity 0.3s ease-in-out'
                 }}
               >
-                TechVibe
+                TECHVIBE
               </Typography>
             </Box>
 

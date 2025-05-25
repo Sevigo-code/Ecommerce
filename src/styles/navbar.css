@@ -1,14 +1,28 @@
 @keyframes scroll {
-  0% {
+  from {
     transform: translateX(100%);
   }
-  100% {
+  to {
     transform: translateX(-100%);
   }
 }
 
+.scroll-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  background: black;
+}
+
 .scroll-text {
   display: inline-block;
+  padding-right: 50px;
   animation: scroll 20s linear infinite;
   white-space: nowrap;
+}
+
+.scroll-text-content {
+  display: inline-block;
+  padding-right: 50px;
 } 

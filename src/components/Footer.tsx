@@ -1,6 +1,10 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 const Footer = () => {
+  const scrollText = "FREE SHIPPING ON ALL YOUR PURCHASES";
+  // Repetir el texto varias veces para asegurar una animación continua
+  const repeatedText = Array(6).fill(scrollText).join(' ');
+
   return (
     <Box 
       component="footer" 
@@ -15,19 +19,15 @@ const Footer = () => {
       }}
     >
       <Container maxWidth={false} disableGutters>
-        <Typography 
-          variant="body2" 
-          sx={{
-            textAlign: 'center',
-            fontSize: '0.875rem',
-            letterSpacing: 1,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden'
-          }}
-          className="scroll-text"
-        >
-          FREE SHIPPING ON ALL YOUR PURCHASES &nbsp;&nbsp;&nbsp; FREE SHIPPING ON ALL YOUR PURCHASES &nbsp;&nbsp;&nbsp; FREE SHIPPING ON ALL YOUR PURCHASES
-        </Typography>
+        <div className="scroll-container">
+          <div className="scroll-text">
+            {Array(2).fill(repeatedText).map((text, index) => (
+              <span key={index} className="scroll-text-content">
+                {text}
+              </span>
+            ))}
+          </div>
+        </div>
       </Container>
     </Box>
   );
