@@ -87,24 +87,35 @@ $font-family-base: 'Oswald', sans-serif;
 // Estilos Base y Reset
 // Asegura una base consistente para todos los elementos
 // ============================================================================
-* {
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth; // Suaviza el scroll para una mejor UX
+  min-height: 100vh;
+  width: 100%;
 }
 
 body {
   font-family: $font-family-base;
-  background-color: $background-light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: $text-color-dark;
   line-height: 1.6;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased; // Mejora el renderizado de la fuente
-  -moz-osx-font-smoothing: grayscale; // Mejora el renderizado de la fuente
+  position: relative;
+  background: url('/images/background.jpg') center center/cover no-repeat fixed;
+  
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.1);
+    z-index: -1;
+  }
 }
 
 // ============================================================================
@@ -115,7 +126,36 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: $background-light;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../../src/background.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1);
+    z-index: -2;
+  }
+
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+  }
 }
 
 .main-content {
@@ -141,10 +181,11 @@ body {
   @include smooth-transition(transform, box-shadow); // Usa mixin
   border-radius: $border-radius-md !important; // Radios de borde definidos
   overflow: hidden;
-  background: $card-background !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(10px);
   @include elevate(sm); // Aplica sombra pequeña
   position: relative; // Para elementos posicionados dentro
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
 
   &:hover {
     transform: translateY(-5px); // Ligero levantamiento al pasar el mouse
