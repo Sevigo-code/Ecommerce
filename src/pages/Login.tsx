@@ -18,31 +18,84 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import axios from 'axios';
 
+// Credenciales de demostración que funcionan con reqres.in
+const DEMO_EMAIL = 'eve.holt@reqres.in';
+const DEMO_PASSWORD = 'cityslicka';
+const API_KEY = 'reqres-free-v1';
+
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(DEMO_EMAIL);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const validateEmail = (email: string) => {
+    return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validar email
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    // Validar password
+    if (password.length < 1) {
+      setError('Password is required');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await axios.post('https://reqres.in/api/login', {
-        email,
-        password,
+      const response = await axios({
+        method: 'post',
+        url: 'https://reqres.in/api/login',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY
+        },
+        data: {
+          email: email.trim(),
+          password: password.trim()
+        }
       });
 
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         navigate('/');
       }
-    } catch (err) {
-      setError('Invalid email or password. Try eve.holt@reqres.in with any password.');
+    } catch (err: any) {
+      console.error('Login error:', err.response || err);
+      if (err.response) {
+        // Error de respuesta del servidor
+        switch (err.response.status) {
+          case 400:
+            setError('Invalid email or password format');
+            break;
+          case 401:
+            if (err.response.data?.error === 'Missing API key.') {
+              setError('Authentication error. Please try again later.');
+              console.error('API Key error:', err.response.data);
+            } else {
+              setError(`Use these credentials to login:\nEmail: ${DEMO_EMAIL}\nPassword: ${DEMO_PASSWORD}`);
+            }
+            break;
+          default:
+            setError('An error occurred. Please try again later');
+        }
+      } else if (err.request) {
+        // Error de red
+        setError('Network error. Please check your internet connection');
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }
@@ -73,10 +126,10 @@ const Login = () => {
               letterSpacing: '-0.5px'
             }}
           >
-            Bienvenido a TechVibe
+            Welcome to TechVibe
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Inicia Sesión para seguir comprando
+            Sign in to continue shopping
           </Typography>
         </Box>
         
@@ -88,7 +141,8 @@ const Login = () => {
               borderRadius: 2,
               '& .MuiAlert-message': {
                 width: '100%',
-                textAlign: 'center'
+                textAlign: 'center',
+                whiteSpace: 'pre-line'
               }
             }}
           >
@@ -204,7 +258,7 @@ const Login = () => {
             borderRadius: 2
           }}
         >
-          Demo credentials: eve.holt@reqres.in with any password
+          The demo credentials are pre-filled. Just click Sign In!
         </Typography>
       </Paper>
     </Container>

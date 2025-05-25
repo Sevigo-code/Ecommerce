@@ -8,7 +8,6 @@ import {
   CardMedia,
   IconButton,
   Box,
-  Button,
   Divider,
   Paper,
 } from '@mui/material';
@@ -17,6 +16,8 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { RootState } from '../store';
 import { removeFromCart, updateQuantity } from '../store/slices/cartSlice';
+import ActionButton from '../components/ActionButton';
+import QuantityButton from '../components/QuantityButton';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ const Cart = () => {
     return (
       <Container sx={{ py: 6 }}>
         <Typography variant="h5" align="center" color="text.secondary">
-          🛒 ¡Tu carrito está vacío!
+          🛒 Your Cart is Empty!
         </Typography>
       </Container>
     );
@@ -47,27 +48,44 @@ const Cart = () => {
   return (
     <Container sx={{ py: 6 }}>
       <Typography variant="h4" fontWeight={700} mb={4}>
-        Carrito de Compras
+        Shopping Cart
       </Typography>
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
           {items.map((item) => (
-            <Paper key={item.id} elevation={2} sx={{ mb: 3, p: 2, borderRadius: 3 }}>
+            <Paper 
+              key={item.id} 
+              elevation={0} 
+              sx={{ 
+                mb: 3, 
+                p: 2, 
+                borderRadius: 3,
+                backgroundColor: 'rgba(255, 255, 255, 0.7) !important',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+              }}
+            >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={3}>
-                  <CardMedia
-                    component="img"
-                    image={item.image}
-                    alt={item.name}
-                    sx={{
-                      width: '100%',
-                      height: 140,
-                      objectFit: 'contain',
-                      backgroundColor: '#f7f7f7',
-                      borderRadius: 2,
-                    }}
-                  />
+                  <Box sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.5) !important',
+                    backdropFilter: 'blur(5px)',
+                    p: 2,
+                    borderRadius: 2,
+                  }}>
+                    <CardMedia
+                      component="img"
+                      image={item.image}
+                      alt={item.name}
+                      sx={{
+                        width: '100%',
+                        height: 140,
+                        objectFit: 'contain',
+                        backgroundColor: 'rgba(255, 255, 255, 0.3) !important',
+                      }}
+                    />
+                  </Box>
                 </Grid>
                 <Grid item xs={12} sm={9}>
                   <Box display="flex" flexDirection="column" justifyContent="space-between" height="100%">
@@ -79,23 +97,22 @@ const Cart = () => {
                         ${item.price.toFixed(2)}
                       </Typography>
                     </Box>
-                    <Box mt={2} display="flex" alignItems="center" gap={1}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                      >
-                        <RemoveIcon fontSize="small" />
-                      </IconButton>
-                      <Typography>{item.quantity}</Typography>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                      >
-                        <AddIcon fontSize="small" />
-                      </IconButton>
+                    <Box mt={2} display="flex" alignItems="center" gap={2}>
+                      <QuantityButton
+                        quantity={item.quantity}
+                        onQuantityChange={(newQuantity) => handleUpdateQuantity(item.id, newQuantity)}
+                      />
                       <IconButton
                         color="error"
                         onClick={() => handleRemoveFromCart(item.id)}
+                        sx={{
+                          border: '1px solid rgba(0, 0, 0, 0.1)',
+                          backgroundColor: 'white',
+                          '&:hover': {
+                            backgroundColor: '#fff0f0',
+                            border: '1px solid #ff0000',
+                          }
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -108,10 +125,18 @@ const Cart = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{ borderRadius: 3, p: 2 }}>
+          <Card 
+            sx={{ 
+              borderRadius: 3, 
+              p: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.7) !important',
+              backdropFilter: 'blur(8px)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            }}
+          >
             <CardContent>
               <Typography variant="h6" fontWeight={600} gutterBottom>
-                Resumen del Pedido
+                Order Summary
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Box display="flex" justifyContent="space-between" mb={2}>
@@ -120,15 +145,12 @@ const Cart = () => {
                   ${total.toFixed(2)}
                 </Typography>
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                size="large"
-                sx={{ borderRadius: 2, mt: 1 }}
+              <ActionButton
+                variant="primary"
+                sx={{ mt: 1 }}
               >
-                Finalizar Pedido
-              </Button>
+                CHECKOUT
+              </ActionButton>
             </CardContent>
           </Card>
         </Grid>

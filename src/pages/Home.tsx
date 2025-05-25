@@ -7,7 +7,6 @@ import {
   CardContent,
   CardMedia,
   Typography,
-  Button,
   Container,
   FormControl,
   InputLabel,
@@ -20,15 +19,19 @@ import {
 } from '@mui/material';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { AppDispatch, RootState } from '../store';
 import { fetchProducts, setSelectedCategory } from '../store/slices/productsSlice';
 import { addToCart } from '../store/slices/cartSlice';
+import { toggleFavorite } from '../store/slices/favoritesSlice';
 import { Product } from '../types';
+import ActionButton from '../components/ActionButton';
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { items: products, loading, error, selectedCategory } = useSelector((state: RootState) => state.products);
+  const favorites = useSelector((state: RootState) => state.favorites.items);
 
   useEffect(() => {
     dispatch(fetchProducts())
@@ -48,6 +51,21 @@ const Home = () => {
 
   const handleAddToCart = (product: Product) => {
     dispatch(addToCart(product));
+  };
+
+  const handleToggleFavorite = (product: Product) => {
+    dispatch(toggleFavorite(product));
+  };
+
+  const isFavorite = (productId: number) => {
+    return favorites.some(item => item.id === productId);
+  };
+
+  const getImageUrl = (imagePath: string) => {
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    return `/images/${imagePath}`;
   };
 
   if (loading) {
@@ -77,23 +95,39 @@ const Home = () => {
         <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
           {error}
         </Alert>
-        <Button variant="contained" onClick={() => dispatch(fetchProducts())}>
-          Reintentar
-        </Button>
+        <ActionButton variant="primary" onClick={() => dispatch(fetchProducts())}>
+          Retry
+        </ActionButton>
       </Container>
     );
   }
 
   return (
     <Container sx={{ py: 4 }} className="fade-in">
-      <FormControl fullWidth size="small" sx={{ mb: 3 }}>
-        <InputLabel>Categoría</InputLabel>
+      <FormControl 
+        fullWidth 
+        size="small" 
+        sx={{ 
+          mb: 3,
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: 'rgba(255, 255, 255, 0.6) !important',
+            backdropFilter: 'blur(8px)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.7) !important',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'rgba(255, 255, 255, 0.8) !important',
+            }
+          }
+        }}
+      >
+        <InputLabel>Category</InputLabel>
         <Select
           value={selectedCategory || ''}
           onChange={(e) => handleCategoryChange(e.target.value || null)}
-          label="Categoría"
+          label="Category"
         >
-          <MenuItem value="">Todas las categorías</MenuItem>
+          <MenuItem value="">All categories</MenuItem>
           {categories.map((category) => (
             <MenuItem key={category} value={category}>
               {category}
@@ -104,33 +138,50 @@ const Home = () => {
 
       {products.length === 0 && !loading && !error && (
         <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
-          No hay productos disponibles
+          There are no products available
         </Alert>
       )}
 
       <Grid container spacing={3}>
         {filteredProducts.map((product) => (
           <Grid item key={product.id} xs={12} sm={6} md={4}>
-            <Card
+            <Box
               sx={{
+                background: 'white',
                 borderRadius: 3,
-                boxShadow: 3,
-                transition: 'transform 0.2s ease-in-out',
+                overflow: 'hidden',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                transition: 'all 0.3s ease-in-out',
                 '&:hover': {
-                  transform: 'scale(1.02)',
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 16px 32px rgba(0,0,0,0.15)',
                 },
               }}
             >
-              <Box sx={{ position: 'relative', p: 2, bgcolor: '#f9f9f9' }}>
-                <CardMedia
-                  component="img"
-                  image={product.image}
+              <Box 
+                sx={{ 
+                  position: 'relative',
+                  p: 2,
+                  background: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '250px',
+                }}
+              >
+                <img
+                  src={getImageUrl(product.image)}
                   alt={product.name}
-                  sx={{
-                    width: '100%',
-                    height: 200,
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '100%',
                     objectFit: 'contain',
-                    borderRadius: 2,
+                    display: 'block',
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/images/placeholder.jpg';
+                    target.onerror = null;
                   }}
                 />
                 <Box
@@ -140,52 +191,71 @@ const Home = () => {
                     right: 10,
                     display: 'flex',
                     gap: 1,
+                    zIndex: 2,
                   }}
                 >
-                  <Tooltip title="Añadir a favoritos">
+                  <Tooltip title={isFavorite(product.id) ? "Remove from Favorites" : "Add to Favorites"}>
                     <IconButton
                       size="small"
+                      onClick={() => handleToggleFavorite(product)}
                       sx={{
-                        backgroundColor: 'white',
-                        boxShadow: 1,
+                        background: 'rgba(255, 255, 255, 0.6)',
+                        backdropFilter: 'blur(5px)',
+                        color: isFavorite(product.id) ? '#f50057' : 'inherit',
                         '&:hover': {
-                          backgroundColor: '#f0f0f0',
+                          background: 'rgba(255, 255, 255, 0.8)',
+                          color: isFavorite(product.id) ? '#dc004e' : '#f50057',
                         },
                       }}
                     >
-                      <FavoriteBorderIcon sx={{ fontSize: 18 }} />
+                      {isFavorite(product.id) ? (
+                        <FavoriteIcon sx={{ fontSize: 18 }} />
+                      ) : (
+                        <FavoriteBorderIcon sx={{ fontSize: 18 }} />
+                      )}
                     </IconButton>
                   </Tooltip>
                 </Box>
               </Box>
-              <CardContent>
+              <Box 
+                sx={{ 
+                  p: 2,
+                  background: 'rgba(220, 220, 220, 0.5)',
+                  backdropFilter: 'blur(8px)',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                }}
+              >
                 <Typography
                   variant="subtitle1"
                   fontWeight={600}
                   onClick={() => navigate(`/product/${product.id}`)}
                   sx={{
                     cursor: 'pointer',
+                    color: 'rgba(0, 0, 0, 0.87)',
                     '&:hover': { color: 'primary.main' },
                   }}
                 >
                   {product.name}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mt={0.5}>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'rgba(0, 0, 0, 0.7)',
+                    mt: 0.5 
+                  }}
+                >
                   ${product.price.toFixed(2)}
                 </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
+                <ActionButton
+                  variant="primary"
                   startIcon={<ShoppingCartOutlinedIcon />}
-                  fullWidth
-                  sx={{ mt: 2, borderRadius: 2 }}
+                  sx={{ mt: 2 }}
                   onClick={() => handleAddToCart(product)}
                 >
-                  Añadir al carrito
-                </Button>
-              </CardContent>
-            </Card>
+                  ADD TO CART
+                </ActionButton>
+              </Box>
+            </Box>
           </Grid>
         ))}
       </Grid>

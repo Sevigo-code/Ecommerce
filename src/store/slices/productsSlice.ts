@@ -22,32 +22,32 @@ export const fetchProducts = createAsyncThunk(
     try {
       const response = await axios.get('https://fakestoreapi.com/products');
       
-      //Validacion de las respuestas
+      // Response validation
       if (!Array.isArray(response.data)) {
-        throw new Error('Formato Invalido');
+        throw new Error('Invalid format');
       }
 
-      //Validacion de cada producto
+      // Product validation
       return response.data.map((item: any) => {
         if (!item.title || !item.price || !item.image) {
-          console.warn('Datos del producto invalidos:', item);
+          console.warn('Invalid product data:', item);
         }
 
         return {
           id: item.id || Math.random(),
-          name: item.title || 'Producto desconocido',
+          name: item.title || 'Unknown product',
           description: item.description || '',
           price: Number(item.price) || 0,
           image: item.image || '',
-          category: item.category || 'Sin categoria',
-          stock: Math.floor(Math.random() * 50) + 1, //Stock random
+          category: item.category || 'No category',
+          stock: Math.floor(Math.random() * 50) + 1, // Random stock
         };
       });
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue('Error al obtener los productos');
+      return rejectWithValue('Error fetching products');
     }
   }
 );
@@ -73,11 +73,11 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || 'Error al cargar los productos';
+        state.error = action.payload as string || 'Error loading products.';
         state.items = [];
       });
   },
 });
 
 export const { setSelectedCategory } = productsSlice.actions;
-export default productsSlice.reducer; 
+export default productsSlice.reducer;

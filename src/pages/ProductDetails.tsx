@@ -4,7 +4,6 @@ import {
   Container,
   Grid,
   Typography,
-  Button,
   Card,
   CardMedia,
   Box,
@@ -12,6 +11,7 @@ import {
 } from '@mui/material';
 import { RootState } from '../store';
 import { addToCart } from '../store/slices/cartSlice';
+import ActionButton from '../components/ActionButton';
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,16 +26,15 @@ const ProductDetails = () => {
     return (
       <Container sx={{ py: 6 }}>
         <Typography variant="h5" color="error" align="center" gutterBottom>
-          Producto no encontrado
+          Product not found
         </Typography>
         <Box display="flex" justifyContent="center">
-          <Button
-            variant="contained"
-            color="primary"
+          <ActionButton
+            variant="secondary"
             onClick={() => navigate(-1)}
           >
-            Volver atrás
-          </Button>
+            Go Back
+          </ActionButton>
         </Box>
       </Container>
     );
@@ -48,69 +47,105 @@ const ProductDetails = () => {
   return (
     <Container sx={{ py: 4 }}>
       <Grid container spacing={4}>
-        {/* Imagen del producto */}
+        {/* Product Image */}
         <Grid item xs={12} md={6}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="400"
-              image={product.image}
-              alt={product.name}
-              sx={{ objectFit: 'contain', p: 2 }}
-            />
+          <Card sx={{ 
+            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+            backgroundColor: 'rgba(255, 255, 255, 0.7) !important',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 3,
+          }}>
+            <Box sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.5) !important',
+              backdropFilter: 'blur(5px)',
+              p: 2,
+            }}>
+              <CardMedia
+                component="img"
+                height="400"
+                image={product.image}
+                alt={product.name}
+                sx={{ 
+                  objectFit: 'contain',
+                  backgroundColor: 'rgba(255, 255, 255, 0.3) !important',
+                }}
+              />
+            </Box>
           </Card>
         </Grid>
 
-        {/* Detalles del producto */}
+        {/* Product Details */}
         <Grid item xs={12} md={6}>
-          <Typography variant="h4" gutterBottom>
-            {product.name}
-          </Typography>
-
-          <Typography variant="h5" color="primary" gutterBottom>
-            ${product.price.toFixed(2)}
-          </Typography>
-
-          {/* Breadcrumb de categoría */}
-          <Box sx={{ my: 2 }}>
-            <Chip label={product.category} color="secondary" />
-          </Box>
-
-          {/* Descripción */}
-          <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
-            Descripción:
-          </Typography>
-          <Typography variant="body2" paragraph>
-            {product.description || 'No hay descripción disponible.'}
-          </Typography>
-
-          {/* Stock */}
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Stock:
-              <strong
-                style={{
-                  color: product.stock > 0 ? 'green' : 'red',
-                  marginLeft: 8,
-                }}
-              >
-                {product.stock > 0 ? `${product.stock} unidades` : 'Agotado'}
-              </strong>
+          <Box sx={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.7) !important',
+            backdropFilter: 'blur(8px)',
+            p: 4, 
+            borderRadius: 3,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          }}>
+            <Typography variant="h4" gutterBottom>
+              {product.name}
             </Typography>
-          </Box>
 
-          {/* Botón de añadir al carrito */}
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleAddToCart}
-            sx={{ mt: 3 }}
-            fullWidth
-            disabled={product.stock === 0}
-          >
-            Añadir al carrito
-          </Button>
+            <Typography variant="h5" color="primary" gutterBottom>
+              ${product.price.toFixed(2)}
+            </Typography>
+
+            {/* Category Breadcrumb */}
+            <Box sx={{ my: 2 }}>
+              <Chip 
+                label={product.category} 
+                color="secondary"
+                sx={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.6) !important',
+                  backdropFilter: 'blur(5px)',
+                  border: '1px solid rgba(0, 0, 0, 0.12)',
+                  color: 'text.primary',
+                }} 
+              />
+            </Box>
+
+            {/* Description */}
+            <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+              Description:
+            </Typography>
+            <Typography variant="body2" paragraph>
+              {product.description || 'No description available'}
+            </Typography>
+
+            {/* Stock */}
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Stock:
+                <strong
+                  style={{
+                    color: product.stock > 0 ? 'green' : 'red',
+                    marginLeft: 8,
+                  }}
+                >
+                  {product.stock > 0 ? `${product.stock} units` : 'Out of stock'}
+                </strong>
+              </Typography>
+            </Box>
+
+            {/* Add to Cart Button */}
+            <ActionButton
+              variant="primary"
+              onClick={handleAddToCart}
+              sx={{ mt: 3 }}
+              disabled={product.stock === 0}
+            >
+              ADD TO CART
+            </ActionButton>
+            
+            <ActionButton
+              variant="secondary"
+              onClick={() => navigate('/cart')}
+              sx={{ mt: 2 }}
+            >
+              BUY NOW
+            </ActionButton>
+          </Box>
         </Grid>
       </Grid>
     </Container>
